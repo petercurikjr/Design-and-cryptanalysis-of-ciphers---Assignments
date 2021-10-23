@@ -85,12 +85,28 @@ if __name__ == '__main__':
             linear_approximation_table[i][j] = approximate_sbox(i, j)
 
     # pretty print the linear approximation table
-    for i in range(len(linear_approximation_table)):
+    for i in range(-1, len(linear_approximation_table)):
+        if i != -1 and i != len(linear_approximation_table):
+            print('%2X' % i, '| ', end='')
+        else:
+            print('      0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n__________', end='')
         for j in range(len(linear_approximation_table[0])):
-            if linear_approximation_table[i][j] > 0:
-                print('%+2i ' % linear_approximation_table[i][j], end='')
+            if i == -1:
+                print('___', end='')
+                if j == len(linear_approximation_table[0]) - 1:
+                    continue
             else:
-                print('%2i ' % linear_approximation_table[i][j], end='')
-        print()
+                if linear_approximation_table[i][j] > 0:
+                    print('%+2i ' % linear_approximation_table[i][j], end='')
+                else:
+                    print('%2i ' % linear_approximation_table[i][j], end='')
+
+        if i != -1 and i != len(linear_approximation_table):
+            print(' |\t\t  row sum: %2i (has to be 8 or -8)' % sum(linear_approximation_table[i]))
+        else:
+            print()
+
+    print('__________________________________________________________')
+    print('               Linear approximation table')
 
 
