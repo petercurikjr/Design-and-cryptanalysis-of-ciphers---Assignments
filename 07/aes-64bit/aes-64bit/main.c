@@ -142,10 +142,25 @@ uint64_t mixColumns(uint64_t block, int mode) {
     
     // Rijndael's matrix and data block multiplication
     for(int i = 15; i >= 3; i-=4) {
-        mixedBlock |= (uint64_t) (arr1[(block >> 4*i) & 0xf] ^ arr2[(block >> 4*(i-1)) & 0xf] ^ arr3[(block >> 4*(i-2)) & 0xf] ^ arr4[(block >> 4*(i-3)) & 0xf]) << 4*i;
-        mixedBlock |= (uint64_t) (arr4[(block >> 4*i) & 0xf] ^ arr1[(block >> 4*(i-1)) & 0xf] ^ arr2[(block >> 4*(i-2)) & 0xf] ^ arr3[(block >> 4*(i-3)) & 0xf]) << 4*(i-1);
-        mixedBlock |= (uint64_t) (arr3[(block >> 4*i) & 0xf] ^ arr4[(block >> 4*(i-1)) & 0xf] ^ arr1[(block >> 4*(i-2)) & 0xf] ^ arr2[(block >> 4*(i-3)) & 0xf]) << 4*(i-2);
-        mixedBlock |= (uint64_t) (arr2[(block >> 4*i) & 0xf] ^ arr3[(block >> 4*(i-1)) & 0xf] ^ arr4[(block >> 4*(i-2)) & 0xf] ^ arr1[(block >> 4*(i-3)) & 0xf]) << 4*(i-3);
+        mixedBlock |= (uint64_t) (arr1[(block >> 4*i) & 0xf]
+                                  ^ arr2[(block >> 4*(i-1)) & 0xf]
+                                  ^ arr3[(block >> 4*(i-2)) & 0xf]
+                                  ^ arr4[(block >> 4*(i-3)) & 0xf]) << 4*i;
+        
+        mixedBlock |= (uint64_t) (arr4[(block >> 4*i) & 0xf]
+                                  ^ arr1[(block >> 4*(i-1)) & 0xf]
+                                  ^ arr2[(block >> 4*(i-2)) & 0xf]
+                                  ^ arr3[(block >> 4*(i-3)) & 0xf]) << 4*(i-1);
+        
+        mixedBlock |= (uint64_t) (arr3[(block >> 4*i) & 0xf]
+                                  ^ arr4[(block >> 4*(i-1)) & 0xf]
+                                  ^ arr1[(block >> 4*(i-2)) & 0xf]
+                                  ^ arr2[(block >> 4*(i-3)) & 0xf]) << 4*(i-2);
+        
+        mixedBlock |= (uint64_t) (arr2[(block >> 4*i) & 0xf]
+                                  ^ arr3[(block >> 4*(i-1)) & 0xf]
+                                  ^ arr4[(block >> 4*(i-2)) & 0xf]
+                                  ^ arr1[(block >> 4*(i-3)) & 0xf]) << 4*(i-3);
     }
     
     return mixedBlock;
