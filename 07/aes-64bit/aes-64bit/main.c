@@ -74,6 +74,7 @@ uint64_t addRoundKey(uint64_t key, uint64_t block) {
 
 uint64_t subBytes(uint64_t block, int mode) {
     uint8_t box[16];
+    // use sbox in case of encrypting. use inverse sbox otherwise
     memcpy(box, mode == 1 ? sbox : inverse_sbox, sizeof(sbox));
     
     uint16_t col1 = (block >> 48) & 0xffff;
@@ -109,6 +110,7 @@ uint64_t subBytes(uint64_t block, int mode) {
 
 uint64_t shiftRows(uint64_t block, int mode) {
     uint8_t arrShiftRows[16];
+    // use shift rows table in case of encrypting. use shift rows inverse table otherwise
     memcpy(arrShiftRows, mode == 1 ? shift_rows_mapping : shift_rows_inverse_mapping, sizeof(shift_rows_mapping));
 
     uint64_t shiftedBlock = 0;
@@ -130,6 +132,7 @@ uint64_t shiftRows(uint64_t block, int mode) {
 
 uint64_t mixColumns(uint64_t block, int mode) {
     uint8_t arr1[16], arr2[16], arr3[16], arr4[16];
+    // choose multiplication tables according to encryption/decryption mode
     memcpy(arr1, mode == 1 ? mul2 : mul14, sizeof(mul1));
     memcpy(arr2, mode == 1 ? mul3 : mul11, sizeof(mul1));
     memcpy(arr3, mode == 1 ? mul1 : mul13, sizeof(mul1));
@@ -137,6 +140,7 @@ uint64_t mixColumns(uint64_t block, int mode) {
     
     uint64_t mixedBlock = 0;
     
+    // Rijndael's matrix and data block multiplication
     for(int i = 15; i >= 3; i-=4) {
         mixedBlock |= (uint64_t) (arr1[(block >> 4*i) & 0xf] ^ arr2[(block >> 4*(i-1)) & 0xf] ^ arr3[(block >> 4*(i-2)) & 0xf] ^ arr4[(block >> 4*(i-3)) & 0xf]) << 4*i;
         mixedBlock |= (uint64_t) (arr4[(block >> 4*i) & 0xf] ^ arr1[(block >> 4*(i-1)) & 0xf] ^ arr2[(block >> 4*(i-2)) & 0xf] ^ arr3[(block >> 4*(i-3)) & 0xf]) << 4*(i-1);
@@ -186,7 +190,8 @@ void generateDataStream() {
         for(uint32_t counter = 0; counter < 125000; counter++) {
             inputBlock |= iv;
             inputBlock = (inputBlock << 32) | counter;
-            uint64_t block = AESdecrypt(inputBlock);
+            // encrypt IV + counter block
+            uint64_t block = AESencrypt(inputBlock);
             
             fwrite(&block, sizeof(block), 1, f[iv]);
             inputBlock = 0;
@@ -198,6 +203,7 @@ void generateDataStream() {
 
 int main(int argc, const char * argv[]) {
     deriveKeys();
+    // for cipher statistical tests purposes
     generateDataStream();
     return 0;
 }
